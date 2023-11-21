@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 //go:embed assets/tileset.png
@@ -26,8 +27,8 @@ var (
 
 func init() {
 	//	tilesetImg = loadImgRaw(tileset)
-	characterImg = loadImgRaw(character)
-	tilesImg = loadImgRaw(tiles)
+	//	characterImg = loadImgRaw(character)
+	//	tilesImg = loadImgRaw(tiles)
 }
 
 func loadImgRaw(src []byte) *ebiten.Image {
@@ -40,11 +41,26 @@ func loadImgRaw(src []byte) *ebiten.Image {
 
 func main() {
 
+	tilesImg, _, err := ebitenutil.NewImageFromFile("cmd/game/assets/tiles.png")
+	if err != nil {
+		panic(err)
+	}
+	characterImg, _, err := ebitenutil.NewImageFromFile("cmd/game/assets/character.png")
+	if err != nil {
+		panic(err)
+	}
+
 	ebiten.SetWindowSize(1080, 720)
 	ebiten.SetWindowTitle("Welcome to the Starside")
 	game := &Game{
 		Level: OpenLevel("cmd/game/maps/level1.map", tilesImg, &Player{
-			img: characterImg,
+			Entity: Entity{
+				Pos: Pos{0, 0},
+			},
+			img:       characterImg,
+			direction: 0,
+			idle:      false,
+			speed:     0,
 		}),
 	}
 	if err := ebiten.RunGame(game); err != nil {

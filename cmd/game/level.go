@@ -74,8 +74,8 @@ func loadLevelFromFile(filename string) *Level {
 			case '.':
 				t = DirtFloor
 			case '@':
-				level.Player.X = x
-				level.Player.Y = y
+				//	level.Player.X = x
+				//	level.Player.Y = y
 				t = Pending
 			// case 'R':
 			//	level.Monsters[Pos{x, y}] = NewRat(Pos{x, y})
@@ -84,7 +84,7 @@ func loadLevelFromFile(filename string) *Level {
 			//	level.Monsters[Pos{x, y}] = NewSpider(Pos{x, y})
 			//	t = Pending
 			default:
-				panic("Invalid character in map")
+				//				panic("Invalid character in map")
 			}
 			level.Map[y][x] = t
 		}

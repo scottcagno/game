@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"image"
 	"math"
 	"os"
 
@@ -20,8 +21,16 @@ const (
 )
 
 type Level struct {
+	Img    *ebiten.Image
 	Map    [][]Tile
-	Player Player
+	Player *Player
+}
+
+func OpenLevel(filename string, image *ebiten.Image, player *Player) *Level {
+	level := loadLevelFromFile(filename)
+	level.Img = image
+	level.Player = player
+	return level
 }
 
 func loadLevelFromFile(filename string) *Level {
@@ -229,24 +238,26 @@ func (level *Level) astar(start Pos, goal Pos) []Pos {
 	return nil
 }
 
-func DrawLevel(level *Level, screen *ebiten.Image) {
-	for y, row := range level.Map {
+func (l *Level) DrawLevel(screenWidth int, screen *ebiten.Image) {
+
+	const tileSize = 32
+
+	w := l.Img.Bounds().Dx()
+	tileXCount := w / tileSize
+
+	// Draw each tile with each DrawImage call.
+	// As the source images of all DrawImage calls are always same,
+	// this rendering is done very efficiently.
+	// For more detail, see https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Image.DrawImage
+	xCount := screenWidth / tileSize
+	for _, row := range l.Map {
 		for x, tile := range row {
-			if tile == Blank {
-				continue
-			}
-			srcRects := ui.textureIndex[tile]
-			srcRect := srcRects[ui.r.Intn(len(srcRects))]
-			dstRect := &sdl.Rect{int32(x*32) + offsetX, int32(y*32) + offsetY, 32, 32}
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(float64((x%xCount)*tileSize), float64((x/xCount)*tileSize))
 
-			pos := game.Pos{x, y}
-			if _, ok := level.Debug[pos]; ok {
-				ui.textureAtlas.SetColorMod(128, 0, 0)
-			} else {
-				ui.textureAtlas.SetColorMod(255, 255, 255)
-			}
-
-			ui.renderer.Copy(ui.textureAtlas, srcRect, dstRect)
+			sx := (int(tile) % tileXCount) * tileSize
+			sy := (int(tile) / tileXCount) * tileSize
+			screen.DrawImage(l.Img.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image), op)
 		}
 	}
 }

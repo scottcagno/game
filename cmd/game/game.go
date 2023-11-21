@@ -7,6 +7,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+const (
+	screenWidth  = 1080
+	screenHeight = 720
+)
+
 type Pos struct {
 	X, Y int
 }
@@ -32,16 +37,13 @@ func (g *Game) GetTick() int {
 
 func (g *Game) Update() error {
 	g.Tick()
-
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// TODO implement me
-	panic("implement me")
+	g.Level.DrawLevel(screenWidth, screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	// TODO implement me
-	panic("implement me")
+	return screenWidth, screenHeight
 }

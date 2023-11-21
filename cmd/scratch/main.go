@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -22,6 +23,7 @@ type Game struct {
 	screenWidth  int
 	screenHeight int
 	player       *Player
+	items        []Item
 }
 
 func (g *Game) DrawOverlay(screen *ebiten.Image) {
@@ -51,6 +53,12 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.player.Draw(screen)
 	g.DrawOverlay(screen)
+
+	for _, item := range g.items {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(item.Pos.X, item.Pos.Y)
+		screen.DrawImage(item.img, op)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -67,7 +75,31 @@ func main() {
 
 	img := ebiten.NewImage(32, 32)
 	img.Fill(color.RGBA{0x39, 0x38, 0x25, 0xff})
-	g.player = NewPlayer(img, float64(g.screenWidth/2), float64(g.screenHeight/2))
+
+	g.player = &Player{
+		Img: img,
+		Pos: Pos{
+			float64(g.screenWidth / 2),
+			float64(g.screenHeight / 2),
+		},
+		Speed:  3,
+		IsIdle: false,
+	}
+
+	img2 := ebiten.NewImage(16, 16)
+	img2.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
+
+	var items []Item
+	for i := 0; i < 10; i++ {
+		items = append(items, Item{
+			img: img2,
+			Pos: Pos{
+				float64(rand.Intn(g.screenWidth-25) + 25),
+				float64(rand.Intn(g.screenHeight-25) + 25),
+			},
+		})
+	}
+	g.items = items
 
 	ebiten.SetWindowSize(g.screenWidth, g.screenHeight)
 	ebiten.SetWindowTitle("Example game")

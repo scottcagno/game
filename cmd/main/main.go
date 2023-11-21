@@ -282,7 +282,7 @@ func downleft(op *ebiten.DrawImageOptions, idle bool, img *ebiten.Image, tick in
 
 func (g *Game) Draw(screen *ebiten.Image) {
 
-	g.level.DrawLevel(screenWidth, screen)
+	//g.level.DrawLevel(screenWidth, screen)
 
 	//screen.Fill(color.RGBA{0x39, 0x38, 0x52, 0xff})
 	p1Op := &ebiten.DrawImageOptions{}

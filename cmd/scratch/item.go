@@ -7,4 +7,5 @@ import (
 type Item struct {
 	img *ebiten.Image
 	Pos
+	Kind TileKind
 }
